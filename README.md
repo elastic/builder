@@ -1,24 +1,10 @@
-# Vercel Action
+# Builder
 
-## Introduction to Vercel
-​Vercel is a cloud platform for **static sites** and **Serverless Functions** that fits perfectly with your workflow. It enables developers to host **Jamstack** websites and web services that **deploy instantly**, **scale automatically**, and requires **no supervision**, all with **no configuration**.
+_A GitHub Action to connect apps to vercel._
 
-This action make a Vercel deployment with github actions. 
+_Used by docs eng to build within GI/CD pipelines._
 
-- [x] Deploy to Vercel.
-- [x] Comment on pull request.
-- [x] Comment on commit.
-- [x] [Password Protect ( Basic Auth )](https://github.com/amondnet/vercel-action#basic-auth-example)
-- [x] [Alias domain to deployment.](https://github.com/amondnet/vercel-action#alias-domains)
-- [ ] Create Deployment on github.
 
-## Result
-
-![preview](./preview.png)
-
-[pull request example](https://github.com/amondnet/now-deployment/pull/2)
-
-[commit](https://github.com/amondnet/now-deployment/commit/3d926623510294463c589327f5420663b1b0b35f)
 ## Inputs
 
 | Name              | Required                      | Default | Description                                                                                       |
