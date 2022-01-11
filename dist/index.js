@@ -1326,11 +1326,11 @@ function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
   return (
     prefix +
     stripIndents`
-      ✅ Preview
+      :heart: Elastic docs preview 
       ${joinDeploymentUrls(deploymentUrl, aliasDomains)}
       
-      Built with commit ${deploymentCommit}.
-      This pull request is being automatically deployed with [vercel-action](https://github.com/marketplace/actions/vercel-action)
+      :rocket: Built with commit ${deploymentCommit}.
+      Questions? Issues? See #next-docs :pray: :wave:
     `
   );
 }
