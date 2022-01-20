@@ -1326,11 +1326,13 @@ function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
   return (
     prefix +
     stripIndents`
-      :heart: Elastic docs preview 
-      ${joinDeploymentUrls(deploymentUrl, aliasDomains)}
+    :rocket: Build successful!
       
-      :rocket: Built with commit ${deploymentCommit}.
-      Questions? Issues? See #next-docs :pray: :wave:
+    * [View my unique preview](${joinDeploymentUrls(deploymentUrl, aliasDomains)})
+    
+    * Built with commit ${deploymentCommit}
+    
+    > Issues? Visit #next-docs in Slack
     `
   );
 }
