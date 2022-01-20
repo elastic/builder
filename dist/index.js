@@ -1312,7 +1312,7 @@ function joinDeploymentUrls(deploymentUrl, aliasDomains_) {
 }
 
 function buildCommentPrefix(deploymentName) {
-  return `Deploy preview for _${deploymentName}_ ready!`;
+  return `:rocket: Built _${deploymentName}_ successfully!`;
 }
 
 function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
@@ -1326,9 +1326,8 @@ function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
   return (
     prefix +
     stripIndents`
-    :rocket: Build successful!
       
-    * [View my unique preview](${joinDeploymentUrls(deploymentUrl, aliasDomains)})
+    * [View deploy preview](${joinDeploymentUrls(deploymentUrl, aliasDomains)})
     
     * Built with commit ${deploymentCommit}
     
@@ -1379,7 +1378,7 @@ async function createCommentOnPullRequest(
     return;
   }
   const commentId = await findPreviousComment(
-    `Deploy preview for _${deploymentName}_ ready!`,
+    `:rocket: Built _${deploymentName}_ successfully!`,
   );
 
   const commentBody = buildCommentBody(
