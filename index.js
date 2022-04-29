@@ -244,16 +244,12 @@ function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
     (typeof githubComment === 'string' || githubComment instanceof String
       ? githubComment
       : stripIndents`
-      :rocket: Preview successful!
       
       * ${joinDeploymentUrls(deploymentUrl, aliasDomains)}
       
       * Built with commit ${deploymentCommit}
-      
-      * New commits are available at this URL after build.
-      
-      > :moon: Issues? Visit #next-docs in Slack
-      > :sun: _Psst...! This issue will update on new builds_
+            
+      > Issues? Visit #next-docs in Slack
     `);
 
   return rawGithubComment
