@@ -131,6 +131,8 @@ async function vercelDeploy(ref, commit) {
     args.push('--scope', vercelScope);
   }
 
+  core.debug(`Vercel Args: ${JSON.stringify(args, null, 2)}`);
+
   await exec.exec('npx', ['vercel', ...args], options);
 
   return myOutput;
@@ -230,13 +232,13 @@ function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
     prefix +
     stripIndents`
       :rocket: Preview successful!
-      
+
       * ${joinDeploymentUrls(deploymentUrl, aliasDomains)}
-      
+
       * Built with commit ${deploymentCommit}
-      
+
       * New commits are available at this URL after build.
-      
+
       > Issues? Visit #next-docs in Slack
     `
   );
@@ -340,6 +342,8 @@ async function run() {
   let { sha } = context;
   await setEnv();
 
+  core.debug(`context: ${JSON.stringify(context, null, 2)}`);
+
   let commit = execSync('git log -1 --pretty=format:%B')
     .toString()
     .trim();
@@ -350,7 +354,7 @@ async function run() {
     const pullRequestPayload = github.context.payload;
     const pr =
       pullRequestPayload.pull_request || pullRequestPayload.pull_request_target;
-    core.debug(`head : ${pr.head}`);
+    core.debug(`head : ${JSON.stringify(pr.head, null, 2)}`);
 
     ref = pr.head.ref;
     sha = pr.head.sha;
@@ -358,6 +362,7 @@ async function run() {
     core.debug(`The head sha is: ${pr.head.sha}`);
 
     if (octokit) {
+      core.debug('Octokit is defined');
       const { data: commitData } = await octokit.git.getCommit({
         ...context.repo,
         commit_sha: sha,
@@ -366,6 +371,10 @@ async function run() {
       core.debug(`The head commit is: ${commit}`);
     }
   }
+
+  core.debug(`ref is: ${ref}`);
+  core.debug(`commit is: ${commit}`);
+  core.debug('Running Vercel Deploy');
 
   const deploymentUrl = await vercelDeploy(ref, commit);
 
