@@ -8,13 +8,12 @@ npm run package
 
 ```bash
 git add dist
-git tag --new-release
+git tag -a <semver tag>
+git push origin <semver tag>
 ```
 
 
 # Changelog
 
-```bash
-github_changelog_generator
-```
+[Draft a new release](https://github.com/elastic/builder/releases/new) for your newly pushed tag.
 
