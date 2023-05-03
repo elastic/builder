@@ -3,6 +3,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const { execSync } = require('child_process');
 const exec = require('@actions/exec');
+const packageJSON = require('./package.json');
 
 function getGithubCommentInput() {
   const input = core.getInput('github-comment');
@@ -16,7 +17,6 @@ const { context } = github;
 const githubToken = core.getInput('github-token');
 const githubComment = getGithubCommentInput();
 const workingDirectory = core.getInput('working-directory');
-
 const prNumberRegExp = /{{\s*PR_NUMBER\s*}}/g;
 const branchRegExp = /{{\s*BRANCH\s*}}/g;
 
@@ -38,13 +38,37 @@ function slugify(str) {
   return slug;
 }
 
+function retry(fn, retries) {
+  async function attempt(retry) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (retry > retries) {
+        throw error;
+      } else {
+        core.info(`retrying: attempt ${retry + 1} / ${retries + 1}`);
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        return attempt(retry + 1);
+      }
+    }
+  }
+  return attempt(1);
+}
+
 // Vercel
+function getVercelBin() {
+  const input = core.getInput('vercel-version');
+  const fallback = packageJSON.dependencies.vercel;
+  return `vercel@${input || fallback}`;
+}
+
 const vercelToken = core.getInput('vercel-token', { required: true });
 const vercelArgs = core.getInput('vercel-args');
 const vercelOrgId = core.getInput('vercel-org-id');
 const vercelProjectId = core.getInput('vercel-project-id');
 const vercelScope = core.getInput('scope');
 const vercelProjectName = core.getInput('vercel-project-name');
+const vercelBin = getVercelBin();
 const aliasDomains = core
   .getInput('alias-domains')
   .split('\n')
@@ -132,7 +156,7 @@ async function vercelDeploy(ref, commit) {
     ...addVercelMetadata('githubRepo', context.repo.repo, providedArgs),
     ...addVercelMetadata('githubCommitOrg', context.repo.owner, providedArgs),
     ...addVercelMetadata('githubCommitRepo', context.repo.repo, providedArgs),
-    ...addVercelMetadata('githubCommitMessage', commit, providedArgs),
+    ...addVercelMetadata('githubCommitMessage', `"${commit}"`, providedArgs),
     ...addVercelMetadata(
       'githubCommitRef',
       ref.replace('refs/heads/', ''),
@@ -145,7 +169,7 @@ async function vercelDeploy(ref, commit) {
     args.push('--scope', vercelScope);
   }
 
-  await exec.exec('npx', ['vercel', ...args], options);
+  await exec.exec('npx', [vercelBin, ...args], options);
 
   return myOutput;
 }
@@ -170,7 +194,7 @@ async function vercelInspect(deploymentUrl) {
     options.cwd = workingDirectory;
   }
 
-  const args = ['vercel', 'inspect', deploymentUrl, '-t', vercelToken];
+  const args = [vercelBin, 'inspect', deploymentUrl, '-t', vercelToken];
 
   if (vercelScope) {
     core.info('using scope');
@@ -336,15 +360,14 @@ async function aliasDomainsToDeployment(deploymentUrl) {
     core.info('using scope');
     args.push('--scope', vercelScope);
   }
-  const promises = aliasDomains.map(domain => {
-    return exec.exec('npx', [
-      'vercel',
-      ...args,
-      'alias',
-      deploymentUrl,
-      domain,
-    ]);
-  });
+  const promises = aliasDomains.map(domain =>
+    retry(
+      () =>
+        exec.exec('npx', [vercelBin, ...args, 'alias', deploymentUrl, domain]),
+      2,
+    ),
+  );
+
   await Promise.all(promises);
 }
 
