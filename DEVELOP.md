@@ -8,8 +8,8 @@ npm run package
 
 ```bash
 git add dist
-git tag -a <semver tag>
-git push origin <semver tag>
+git tag -a v<semver tag>
+git push origin v<semver tag>
 ```
 
 
