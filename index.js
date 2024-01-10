@@ -268,11 +268,11 @@ function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
     (typeof githubComment === 'string' || githubComment instanceof String
       ? githubComment
       : stripIndents`
-      
+
       * ${joinDeploymentUrls(deploymentUrl, aliasDomains)}
-      
+
       * Built with commit ${deploymentCommit}
-            
+
       > Issues? Visit #next-docs in Slack
     `);
 
@@ -451,5 +451,5 @@ async function run() {
 }
 
 run().catch(error => {
-  core.setFailed(error.message);
+  core.setFailed(`••• ERROR: ${error.message} •••`);
 });
