@@ -19,6 +19,7 @@ const githubComment = getGithubCommentInput();
 const workingDirectory = core.getInput('working-directory');
 const prNumberRegExp = /{{\s*PR_NUMBER\s*}}/g;
 const branchRegExp = /{{\s*BRANCH\s*}}/g;
+const inspectURLRegExp = /Inspect:\s*(https:\/\/vercel.com\/[a-zA-Z0-9/-]*)/;
 
 function isPullRequestType(event) {
   return event.startsWith('pull_request');
@@ -169,7 +170,25 @@ async function vercelDeploy(ref, commit) {
     args.push('--scope', vercelScope);
   }
 
-  await exec.exec('npx', [vercelBin, ...args], options);
+  try {
+    await exec.exec('npx', [vercelBin, ...args], options);
+  } catch (e) {
+    const matches = myOutput.match(inspectURLRegExp);
+    if (matches === null) {
+      console.error(
+        'Something went wrong. Expected the output to include an `Inspect: https://vercel.com/...` link, but it did not',
+      );
+    } else {
+      console.error(
+        `There was an error with the build, and ????: Check out the build logs at ${matches[1]} for more details`,
+      );
+      console.log(
+        `::error was an error with the build, and ????: Check out the build logs at ${matches[1]} for more details`,
+      );
+    }
+
+    throw e;
+  }
 
   return myOutput;
 }
