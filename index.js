@@ -273,7 +273,7 @@ function buildCommentBody(deploymentCommit, deploymentUrl, deploymentName) {
 
       * Built with commit ${deploymentCommit}
 
-      > Issues? Visit #next-docs in Slack
+      > Issues? Visit #docs-elastic-dev in Slack
     `);
 
   return rawGithubComment
