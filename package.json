@@ -45,7 +45,7 @@
     "jest": "^29.4.0"
   },
   "engines": {
-    "node": "v23"
+    "node": "v22"
   },
   "keywords": [
     "GitHub",
